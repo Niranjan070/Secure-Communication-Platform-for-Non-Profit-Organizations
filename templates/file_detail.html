@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}File Detail | Secure NGO Platform{% endblock %}
+{% block content %}
+<section class="panel">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">File Verification</p>
+            <h1>{{ secure_file.original_filename }}</h1>
+        </div>
+        <a class="primary-button" href="{{ url_for('download_file', file_id=secure_file.id) }}">Decrypt and Download</a>
+    </div>
+
+    <div class="detail-grid">
+        <article class="info-panel">
+            <h3>Protected file metadata</h3>
+            <p><strong>Direction:</strong> {{ secure_file.direction }}</p>
+            <p><strong>Counterparty:</strong> {{ secure_file.counterparty }}</p>
+            <p><strong>Sender:</strong> {{ secure_file.sender_name }}</p>
+            <p><strong>Stored size:</strong> {{ secure_file.size|human_size }}</p>
+            <p><strong>Upload time:</strong> {{ secure_file.created_at|datetime_utc }}</p>
+            <p><strong>Original SHA-256:</strong> <code>{{ secure_file.sha256 }}</code></p>
+            <p><strong>Decrypted SHA-256:</strong> <code>{{ secure_file.decrypted_sha256 }}</code></p>
+            <p>
+                <strong>Signature:</strong>
+                <span class="pill pill-{{ 'success' if secure_file.signature_valid else 'danger' }}">
+                    {{ 'Valid' if secure_file.signature_valid else 'Tampered / Invalid' }}
+                </span>
+            </p>
+        </article>
+
+        <article class="info-panel">
+            <h3>Encrypted storage view</h3>
+            <div class="code-block">
+                <strong>Ciphertext preview</strong>
+                <pre>{{ secure_file.ciphertext_preview }}</pre>
+            </div>
+            <div class="code-block">
+                <strong>RSA-wrapped AES key (sender)</strong>
+                <pre>{{ secure_file.encrypted_key_sender }}</pre>
+            </div>
+            <div class="code-block">
+                <strong>RSA-wrapped AES key (recipient)</strong>
+                <pre>{{ secure_file.encrypted_key_recipient }}</pre>
+            </div>
+            <div class="code-block">
+                <strong>Digital Signature</strong>
+                <pre>{{ secure_file.signature }}</pre>
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}

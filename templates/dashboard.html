@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | Secure NGO Platform{% endblock %}
+{% block content %}
+<section class="hero-card dashboard-hero">
+    <div>
+        <p class="eyebrow">Welcome</p>
+        <h1>{{ current_user.full_name }}</h1>
+        <p class="lede">
+            This dashboard maps directly to the security modules: authentication, encrypted email, signed files, access control, and web security.
+        </p>
+        <div class="button-row">
+            <a class="primary-button" href="{{ url_for('compose_message') }}">Send Secure Email</a>
+            <a class="secondary-button" href="{{ url_for('upload_file') }}">Upload Encrypted File</a>
+        </div>
+    </div>
+    <div class="info-panel">
+        <h3>Current role</h3>
+        <p><strong>{{ current_user.role }}</strong></p>
+        <p>Only sender and recipient can decrypt protected content because the AES key is wrapped with their RSA public keys.</p>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Live Overview</p>
+            <h2>Security status</h2>
+        </div>
+    </div>
+    <div id="dashboard-react-root"></div>
+    <script id="dashboard-data" type="application/json">{{ dashboard_data|tojson }}</script>
+</section>
+
+<section class="grid-two">
+    <article class="panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Quick Actions</p>
+                <h2>Operational workflow</h2>
+            </div>
+        </div>
+        <div class="checklist">
+            <div>
+                <strong>1. Authenticate</strong>
+                <p>bcrypt protects stored passwords and Flask manages the session.</p>
+            </div>
+            <div>
+                <strong>2. Encrypt</strong>
+                <p>AES encrypts the content, while RSA protects the AES key for each participant.</p>
+            </div>
+            <div>
+                <strong>3. Sign</strong>
+                <p>RSA signatures verify the integrity of messages and file payloads.</p>
+            </div>
+            <div>
+                <strong>4. Review</strong>
+                <p>Admins can inspect alerts and activity logs for suspicious behavior.</p>
+            </div>
+        </div>
+    </article>
+
+    <article class="panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Recent Activity</p>
+                <h2>Your audit trail</h2>
+            </div>
+        </div>
+        {% if recent_logs %}
+            <div class="activity-list">
+                {% for log in recent_logs %}
+                    <div class="activity-item">
+                        <strong>{{ log.action|replace('_', ' ')|title }}</strong>
+                        <span class="pill pill-{{ log.severity }}">{{ log.severity }}</span>
+                        <small>{{ log.created_at|datetime_utc }}</small>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No recent activity recorded for this session yet.</p>
+        {% endif %}
+    </article>
+</section>
+{% endblock %}

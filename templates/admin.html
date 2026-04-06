@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel | Secure NGO Platform{% endblock %}
+{% block content %}
+<section class="panel">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Administrative Oversight</p>
+            <h1>Admin panel</h1>
+        </div>
+        <form method="post" action="{{ url_for('admin_seed_demo') }}" class="inline-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="primary-button">Seed Demo Data</button>
+        </form>
+    </div>
+</section>
+
+<section class="grid-two">
+    <article class="panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Alerting</p>
+                <h2>Accounts with repeated failures</h2>
+            </div>
+        </div>
+        {% if suspicious_users %}
+            <div class="activity-list">
+                {% for user in suspicious_users %}
+                    <div class="activity-item">
+                        <strong>{{ user.full_name }}</strong>
+                        <span>{{ user.email }}</span>
+                        <span class="pill pill-warning">{{ user.failed_login_count }} failed attempts</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No suspicious login activity is currently flagged.</p>
+        {% endif %}
+    </article>
+
+    <article class="panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">User Directory</p>
+                <h2>Registered members</h2>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user.full_name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.role }}</td>
+                            <td>{{ user.created_at|datetime_utc }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>
+
+<section class="panel">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Audit Logging</p>
+            <h2>Recent activity</h2>
+        </div>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Details</th>
+                    <th>Severity</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                    <tr>
+                        <td>{{ log.action|replace('_', ' ')|title }}</td>
+                        <td><code>{{ log.details }}</code></td>
+                        <td><span class="pill pill-{{ log.severity }}">{{ log.severity }}</span></td>
+                        <td>{{ log.created_at|datetime_utc }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

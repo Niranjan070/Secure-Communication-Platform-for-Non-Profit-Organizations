@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Register | Secure NGO Platform{% endblock %}
+{% block content %}
+<section class="hero-card auth-layout">
+    <div>
+        <p class="eyebrow">User Onboarding</p>
+        <h1>Create a protected account</h1>
+        <p class="lede">
+            New accounts receive a unique RSA key pair. Passwords are hashed with bcrypt before they are stored.
+        </p>
+        <div class="info-panel">
+            <h3>Role model</h3>
+            <p>Staff accounts can send encrypted messages and files.</p>
+            <p>Admin accounts also get access to activity logs and user oversight tools.</p>
+        </div>
+    </div>
+
+    <form method="post" class="form-card">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Full Name
+            <input type="text" name="full_name" maxlength="80" required>
+        </label>
+        <label>Email
+            <input type="email" name="email" maxlength="120" required>
+        </label>
+        <label>Password
+            <input type="password" name="password" placeholder="Use upper, lower, and a number" required>
+        </label>
+        {% if can_assign_admin %}
+            <label>Role
+                <select name="role">
+                    <option value="Staff">Staff</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </label>
+        {% endif %}
+        <button type="submit" class="primary-button">Generate Keys and Register</button>
+    </form>
+</section>
+{% endblock %}

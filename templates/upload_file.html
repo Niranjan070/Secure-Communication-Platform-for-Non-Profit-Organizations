@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Upload File | Secure NGO Platform{% endblock %}
+{% block content %}
+<section class="panel">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Secure File Sharing</p>
+            <h1>Encrypt and sign a file before storage</h1>
+        </div>
+    </div>
+    <p class="lede">
+        Upload PDF or image evidence, policy documents, or donor material. The raw file is encrypted before it is written to the uploads folder.
+    </p>
+
+    <form method="post" enctype="multipart/form-data" class="form-card wide-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Recipient
+            <select name="recipient_id" required>
+                <option value="">Select a recipient</option>
+                {% for recipient in recipients %}
+                    <option value="{{ recipient._id }}">{{ recipient.full_name }} ({{ recipient.role }})</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Secure File
+            <input type="file" name="secure_file" accept=".pdf,.png,.jpg,.jpeg" data-file-input required>
+            <small id="selected-file-name">No file selected yet.</small>
+        </label>
+        <button type="submit" class="primary-button">Encrypt and Upload</button>
+    </form>
+</section>
+{% endblock %}

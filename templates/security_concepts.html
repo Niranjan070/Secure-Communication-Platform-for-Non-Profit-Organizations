@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Security Concepts | Secure NGO Platform{% endblock %}
+{% block content %}
+<section class="panel">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Theory Integration</p>
+            <h1>Security Concepts</h1>
+        </div>
+    </div>
+    <p class="lede">
+        This page connects the working features in the application to the cybersecurity theory in Modules 2 to 6.
+    </p>
+    <div id="concepts-react-root"></div>
+    <script id="concepts-data" type="application/json">{{ concepts|tojson }}</script>
+</section>
+
+<section class="panel">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Access Control Matrix</p>
+            <h2>Role-based permissions</h2>
+        </div>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Resource</th>
+                    <th>Admin</th>
+                    <th>Staff</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in access_control_matrix %}
+                    <tr>
+                        <td>{{ row.resource }}</td>
+                        <td>{{ row.admin }}</td>
+                        <td>{{ row.staff }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

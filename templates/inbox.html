@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Inbox | Secure NGO Platform{% endblock %}
+{% block content %}
+<section class="panel">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Secure Inbox</p>
+            <h1>Encrypted messages</h1>
+        </div>
+        <a class="primary-button" href="{{ url_for('compose_message') }}">New Message</a>
+    </div>
+
+    <div id="inbox-react-root"></div>
+    <script id="inbox-data" type="application/json">{{ inbox_data|tojson }}</script>
+
+    {% if messages %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Direction</th>
+                        <th>Counterparty</th>
+                        <th>Subject</th>
+                        <th>Signature</th>
+                        <th>Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for message in messages %}
+                        <tr>
+                            <td>{{ message.direction }}</td>
+                            <td>{{ message.counterparty }}</td>
+                            <td>{{ message.subject }}</td>
+                            <td>
+                                <span class="pill pill-{{ 'success' if message.signature_valid else 'danger' }}">
+                                    {{ 'Valid' if message.signature_valid else 'Tampered / Invalid' }}
+                                </span>
+                            </td>
+                            <td>{{ message.created_at|datetime_utc }}</td>
+                            <td><a href="{{ url_for('message_detail', message_id=message.id) }}">Open</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No secure messages yet. Use the send page to create the first encrypted email.</p>
+    {% endif %}
+</section>
+{% endblock %}

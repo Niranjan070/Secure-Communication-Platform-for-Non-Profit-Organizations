@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Error {{ code }} | Secure NGO Platform{% endblock %}
+{% block content %}
+<section class="panel narrow-panel">
+    <p class="eyebrow">Error {{ code }}</p>
+    <h1>{{ message }}</h1>
+    <p class="lede">Return to the dashboard or choose another protected area from the navigation bar.</p>
+</section>
+{% endblock %}

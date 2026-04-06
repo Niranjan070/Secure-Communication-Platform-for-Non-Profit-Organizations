@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Login | Secure NGO Platform{% endblock %}
+{% block content %}
+<section class="hero-card auth-layout">
+    <div>
+        <p class="eyebrow">Secure Access</p>
+        <h1>Login to your protected NGO workspace</h1>
+        <p class="lede">
+            Sessions are managed by Flask with secure cookie settings, while encrypted messages and files stay unreadable at rest.
+        </p>
+        <div class="info-panel">
+            <h3>Demo accounts</h3>
+            <p>Seed demo data first, then use:</p>
+            <p><strong>Admin:</strong> admin@ngo.local / Admin@123</p>
+            <p><strong>Staff:</strong> staff@ngo.local / Staff@123</p>
+        </div>
+    </div>
+
+    <form method="post" class="form-card">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Email
+            <input type="email" name="email" placeholder="you@ngo.org" required>
+        </label>
+        <label>Password
+            <input type="password" name="password" placeholder="Enter your password" required>
+        </label>
+        <button type="submit" class="primary-button">Login Securely</button>
+        <p class="form-help">Need an account? <a href="{{ url_for('register') }}">Register here</a>.</p>
+    </form>
+</section>
+{% endblock %}

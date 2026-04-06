@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Message Detail | Secure NGO Platform{% endblock %}
+{% block content %}
+<section class="panel">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Message Detail</p>
+            <h1>{{ message.subject }}</h1>
+        </div>
+        <span class="pill pill-{{ 'success' if message.signature_valid else 'danger' }}">
+            {{ 'Signature Valid' if message.signature_valid else 'Verification Failed' }}
+        </span>
+    </div>
+
+    <div class="detail-grid">
+        <article class="info-panel">
+            <h3>Decrypted email</h3>
+            <p><strong>Sender:</strong> {{ message.sender_name }}</p>
+            <p><strong>Direction:</strong> {{ message.direction }}</p>
+            <p><strong>Counterparty:</strong> {{ message.counterparty }}</p>
+            <p><strong>Sent:</strong> {{ message.created_at|datetime_utc }}</p>
+            <div class="message-body">{{ message.body }}</div>
+        </article>
+
+        <article class="info-panel">
+            <h3>Encrypted storage view</h3>
+            <p>This section shows how the message is stored in MongoDB instead of saving plaintext.</p>
+            <div class="code-block">
+                <strong>AES Ciphertext</strong>
+                <pre>{{ message.encrypted_preview.ciphertext }}</pre>
+            </div>
+            <div class="code-block">
+                <strong>RSA-wrapped AES key (sender)</strong>
+                <pre>{{ message.encrypted_preview.encrypted_key_sender }}</pre>
+            </div>
+            <div class="code-block">
+                <strong>RSA-wrapped AES key (recipient)</strong>
+                <pre>{{ message.encrypted_preview.encrypted_key_recipient }}</pre>
+            </div>
+            <div class="code-block">
+                <strong>Digital Signature</strong>
+                <pre>{{ message.encrypted_preview.signature }}</pre>
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Send Message | Secure NGO Platform{% endblock %}
+{% block content %}
+<section class="panel">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Encrypted Messaging</p>
+            <h1>Send an internal secure email</h1>
+        </div>
+    </div>
+    <p class="lede">
+        This simulates a PGP-style workflow: the plaintext is signed with your RSA private key and encrypted with AES before storage.
+    </p>
+
+    <form method="post" class="form-card wide-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Recipient
+            <select name="recipient_id" required>
+                <option value="">Select a recipient</option>
+                {% for recipient in recipients %}
+                    <option value="{{ recipient._id }}">{{ recipient.full_name }} ({{ recipient.role }})</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Subject
+            <input type="text" name="subject" maxlength="120" required>
+        </label>
+        <label>Encrypted Body
+            <textarea name="body" rows="10" maxlength="5000" required></textarea>
+        </label>
+        <button type="submit" class="primary-button">Encrypt, Sign, and Send</button>
+    </form>
+</section>
+{% endblock %}

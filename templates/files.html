@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Files | Secure NGO Platform{% endblock %}
+{% block content %}
+<section class="panel">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Protected Documents</p>
+            <h1>Encrypted file exchange</h1>
+        </div>
+        <a class="primary-button" href="{{ url_for('upload_file') }}">Upload File</a>
+    </div>
+
+    {% if files %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Direction</th>
+                        <th>Counterparty</th>
+                        <th>File</th>
+                        <th>Type</th>
+                        <th>Size</th>
+                        <th>Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in files %}
+                        <tr>
+                            <td>{{ file.direction }}</td>
+                            <td>{{ file.counterparty }}</td>
+                            <td>{{ file.original_filename }}</td>
+                            <td>{{ file.mime_type }}</td>
+                            <td>{{ file.size|human_size }}</td>
+                            <td>{{ file.created_at|datetime_utc }}</td>
+                            <td><a href="{{ url_for('file_detail', file_id=file.id) }}">Inspect</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No encrypted files have been exchanged yet.</p>
+    {% endif %}
+</section>
+{% endblock %}
