@@ -72,6 +72,7 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 mongo.init_app(app)
 csrf = CSRFProtect(app)
 
+
 with app.app_context():
     init_indexes()
 

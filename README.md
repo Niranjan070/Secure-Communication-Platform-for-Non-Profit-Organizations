@@ -70,9 +70,9 @@ Built as an academic project to bridge the gap between **cybersecurity theory an
 ## 🏗 Architecture
 
 ```
-┌─────────────────────────────────────────────────────┐
+┌──────────────────────────────────────────────────────┐
 │                    Client Browser                    │
-│         HTML/CSS/JS  +  React Dashboard Widgets      │
+│                 HTML/CSS/JS (Jinja2)                 │
 └──────────────────────┬──────────────────────────────┘
                        │  HTTPS (recommended) / HTTP
 ┌──────────────────────▼──────────────────────────────┐
@@ -107,7 +107,7 @@ Built as an academic project to bridge the gap between **cybersecurity theory an
 | Layer | Technology |
 |-------|-----------|
 | **Backend** | Python 3.11+, Flask 3.x |
-| **Frontend** | Server-rendered Jinja2 templates, CSS, JavaScript, React widgets |
+| **Frontend** | Server-rendered Jinja2 templates, CSS, JavaScript |
 | **Database** | MongoDB with PyMongo |
 | **Cryptography** | `cryptography` library (AES-GCM, RSA-OAEP, RSA-PSS) |
 | **Authentication** | `bcrypt` for password hashing |
@@ -153,8 +153,7 @@ Built as an academic project to bridge the gap between **cybersecurity theory an
 │   ├── css/
 │   │   └── style.css         # Application styles
 │   └── js/
-│       ├── main.js           # Core JavaScript
-│       └── react-app.js      # React dashboard components
+│       └── main.js           # Core JavaScript
 │
 ├── uploads/                  # Encrypted file storage (*.bin)
 └── sample_data/
