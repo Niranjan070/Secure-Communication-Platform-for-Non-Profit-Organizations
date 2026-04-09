@@ -1,337 +1,644 @@
-# 🔐 Secure Communication Platform for Non-Profit Organizations
+# Secure Communication Platform for Non-Profit Organizations
 
-A full-stack web application demonstrating **end-to-end secure communication** for NGO teams. The platform implements real-world cryptographic protocols — AES-256-GCM encryption, RSA-2048 key exchange, and digital signatures — within a practical messaging and file-sharing workflow.
+## Table of Contents
 
-Built as an academic project to bridge the gap between **cybersecurity theory and hands-on implementation**.
+1. [Project Overview](#project-overview)
+2. [Abstract](#abstract)
+3. [Problem Statement](#problem-statement)
+4. [Objectives](#objectives)
+5. [Project Scope](#project-scope)
+6. [Key Features](#key-features)
+7. [Technology Stack](#technology-stack)
+8. [System Architecture](#system-architecture)
+9. [Project Structure](#project-structure)
+10. [Functional Workflow](#functional-workflow)
+11. [Security Design](#security-design)
+12. [Database Design](#database-design)
+13. [Access Control Model](#access-control-model)
+14. [Installation and Execution](#installation-and-execution)
+15. [Environment Variables](#environment-variables)
+16. [Demo Accounts](#demo-accounts)
+17. [Suggested Demonstration Flow](#suggested-demonstration-flow)
+18. [Implementation Status](#implementation-status)
+19. [Limitations](#limitations)
+20. [Future Enhancements](#future-enhancements)
+21. [Conclusion](#conclusion)
 
-![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Flask](https://img.shields.io/badge/Flask-3.x-000000?style=for-the-badge&logo=flask&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-4.x+-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
+## Project Overview
 
----
+This project is a secure internal communication platform designed for non-profit and NGO teams. It demonstrates how core cybersecurity concepts can be implemented in a practical web application instead of being discussed only in theory.
 
-## 📋 Table of Contents
+The platform allows registered users to:
 
-- [Features](#-features)
-- [Architecture](#-architecture)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Getting Started](#-getting-started)
-- [Demo Walkthrough](#-demo-walkthrough)
-- [Security Implementation](#-security-implementation)
-- [Cryptographic Flow](#-cryptographic-flow)
-- [Security Concepts Mapped to Theory](#-security-concepts-mapped-to-theory)
-- [Environment Variables](#-environment-variables)
-- [Screenshots](#-screenshots)
-- [Contributing](#-contributing)
+- create accounts and log in securely
+- send encrypted internal messages
+- upload and exchange encrypted files
+- verify message and file authenticity using digital signatures
+- enforce role-based access control
+- monitor security-related events through an admin dashboard
 
----
+The application is intended as an academic or demonstration project. It is strong as a learning prototype and presentation-ready system, but it is not positioned as a fully hardened production deployment.
 
-## ✨ Features
+## Abstract
 
-### 🔑 Authentication & Access Control
-- **Bcrypt password hashing** — passwords are never stored in plaintext
-- **Role-based access control** — `Admin` and `Staff` roles with distinct privileges
-- **Failed login tracking** — brute-force detection with audit alerts after 3+ failed attempts
-- **Secure session management** — HTTPOnly cookies, SameSite policy, configurable HTTPS-only mode
+Non-profit organizations often handle sensitive donor information, internal reports, beneficiary details, and operational files. These organizations may not always have access to enterprise-grade secure communication tools, which increases the risk of data leakage, tampering, and unauthorized access.
 
-### 📧 Encrypted Internal Email
-- **AES-256-GCM symmetric encryption** for message content
-- **RSA-2048 key wrapping** — AES key encrypted for both sender and recipient
-- **RSA-PSS digital signatures** for integrity verification and non-repudiation
-- Messages are stored fully encrypted; decryption happens only at access time
+This project addresses that problem by building a web-based secure communication platform using Flask, MongoDB, and modern cryptographic techniques. The system applies bcrypt password hashing for authentication security, AES-256-GCM for payload encryption, RSA-2048 for key protection, and RSA-PSS digital signatures for integrity verification. In addition, the application includes CSRF protection, access control, session security, audit logging, and suspicious login monitoring.
 
-### 📁 Secure File Sharing
-- Upload PDFs and images with automatic **client-to-storage encryption**
-- Files stored as `.bin` blobs — unreadable without proper RSA key decryption
-- **SHA-256 checksums** for file integrity verification
-- Digital signature verification on every download
+The project bridges cybersecurity theory and implementation by showing how confidentiality, integrity, authentication, authorization, and accountability can be enforced in a real workflow for secure messaging and file sharing.
 
-### 🛡️ Web Security
-- **CSRF protection** on all state-changing forms via Flask-WTF
-- Input validation and sanitization on all user inputs
-- 10 MB upload limit with file type whitelisting (PDF, PNG, JPG, JPEG)
-- Secure cookie configuration with configurable HTTPS enforcement
+## Problem Statement
 
-### 📊 Admin Dashboard
-- View all registered users and their roles
-- Monitor **security alerts** — accounts with suspicious login patterns
-- Full **audit log** of platform activity (logins, messages, uploads, downloads)
-- Seed demo data for classroom demonstrations
+NGOs and non-profit organizations frequently work with confidential operational data, volunteer records, donor details, and internal planning documents. If such data is transmitted or stored insecurely, it becomes vulnerable to:
 
-### 📚 Security Concepts Page
-- Interactive reference mapping every feature to **cybersecurity theory modules**
-- Access Control Matrix visualization
-- Covers: threat modeling, symmetric/asymmetric encryption, digital signatures, PGP-style email, and web security
+- unauthorized access
+- insider misuse
+- accidental data exposure
+- tampering during storage or transfer
+- weak authentication practices
 
----
+The goal of this project is to provide a secure internal communication system that reduces these risks while also serving as a practical demonstration of applied information security concepts.
 
-## 🏗 Architecture
+## Objectives
 
+The main objectives of this project are:
+
+- to build a secure communication platform for internal organizational use
+- to protect sensitive messages and files using encryption
+- to verify authenticity and integrity using digital signatures
+- to enforce role-based access control between admin and staff users
+- to record activity for auditing and monitoring purposes
+- to map academic cybersecurity concepts to a functioning software system
+
+## Project Scope
+
+This project covers the following scope:
+
+- web-based user registration and login
+- internal secure messaging between registered users
+- encrypted file upload, storage, inspection, and download
+- admin oversight for users and activity logs
+- educational presentation of cybersecurity concepts through a dedicated theory page
+
+The project does not include:
+
+- deployment automation
+- production-grade infrastructure hardening
+- client-side end-to-end cryptography with private keys held only by the user
+- automated unit or integration tests
+
+## Key Features
+
+### 1. Authentication and Account Security
+
+- password hashing using bcrypt
+- email normalization and validation
+- password policy enforcement
+- failed login count tracking
+- suspicious login alerting after repeated failures
+- session-based authentication with secure cookie settings
+
+### 2. Role-Based Access Control
+
+- two user roles: `Admin` and `Staff`
+- admins can access administrative views and monitoring tools
+- staff users can access their own communication and shared files
+- encrypted content is restricted to the sender and recipient
+
+### 3. Encrypted Messaging
+
+- secure internal message composition
+- AES-256-GCM encryption for message content
+- RSA-2048 encryption of the AES key for both sender and recipient
+- RSA-PSS digital signatures for message verification
+- encrypted message storage in MongoDB
+
+### 4. Secure File Sharing
+
+- PDF and image uploads
+- file encryption before storage
+- encrypted files saved on disk as `.bin` blobs
+- SHA-256 checksum generation for integrity checking
+- digital signature verification for uploaded files
+
+### 5. Web Security Controls
+
+- CSRF protection for state-changing forms
+- input cleaning and server-side validation
+- upload size limit of 10 MB
+- file type whitelisting
+- HTTPOnly and SameSite session cookies
+- optional HTTPS-only cookie enforcement through environment configuration
+
+### 6. Admin Monitoring
+
+- registered user listing
+- suspicious login activity visibility
+- recent activity log review
+- demo data seeding for presentations and evaluation
+
+### 7. Theory Integration
+
+- dedicated security concepts page
+- mapping of application features to academic cybersecurity modules
+- access control matrix for role permissions
+
+## Technology Stack
+
+| Layer | Technology | Purpose |
+| --- | --- | --- |
+| Backend | Python 3.11+, Flask 3.x | Application logic and routing |
+| Frontend | Jinja2 templates, HTML, CSS, JavaScript | User interface |
+| UI Enhancements | Lightweight React via CDN | Dashboard and concept cards |
+| Database | MongoDB with PyMongo | Users, messages, file metadata, logs |
+| Cryptography | `cryptography` library | AES, RSA, signatures, checksums |
+| Password Security | `bcrypt` | Password hashing |
+| Form Security | Flask-WTF | CSRF protection |
+| Configuration | `python-dotenv` | Environment variable loading |
+
+## System Architecture
+
+The application follows a simple layered architecture:
+
+```text
++-----------------------------+
+|        Client Browser       |
+|   HTML / CSS / JS / Jinja   |
++-------------+---------------+
+              |
+              | HTTP / HTTPS
+              v
++-----------------------------+
+|       Flask Application     |
+|  Routes, sessions, access   |
+|  control, validation, UI    |
++-------------+---------------+
+              |
+              +------------------------------+
+              |                              |
+              v                              v
++-----------------------------+   +-----------------------------+
+|     Crypto Utility Layer    |   |        MongoDB Layer        |
+| AES-GCM, RSA-OAEP, RSA-PSS  |   | users, messages, files,     |
+| key wrapping, signatures    |   | activity logs               |
++-------------+---------------+   +-----------------------------+
+              |
+              v
++-----------------------------+
+|   Encrypted File Storage    |
+|      uploads/*.bin          |
++-----------------------------+
 ```
-┌──────────────────────────────────────────────────────┐
-│                    Client Browser                    │
-│                 HTML/CSS/JS (Jinja2)                 │
-└──────────────────────┬──────────────────────────────┘
-                       │  HTTPS (recommended) / HTTP
-┌──────────────────────▼──────────────────────────────┐
-│                 Flask Application                    │
-│  ┌──────────┐  ┌───────────┐  ┌───────────────────┐ │
-│  │  Routes  │  │   Auth    │  │  CSRF Protection  │ │
-│  │ & Views  │  │ Middleware│  │   (Flask-WTF)     │ │
-│  └────┬─────┘  └─────┬─────┘  └───────────────────┘ │
-│       │              │                               │
-│  ┌────▼──────────────▼──────────────────────────┐   │
-│  │            Crypto Engine                      │   │
-│  │  AES-256-GCM  |  RSA-2048 OAEP  |  RSA-PSS  │   │
-│  │  Key Wrapping  |  Digital Signatures          │   │
-│  └────────────────────┬─────────────────────────┘   │
-└───────────────────────┼─────────────────────────────┘
-                        │
-        ┌───────────────┼───────────────┐
-        ▼                               ▼
-┌───────────────┐              ┌──────────────────┐
-│   MongoDB     │              │  Encrypted File  │
-│  ─ users      │              │    Storage       │
-│  ─ messages   │              │  (uploads/*.bin) │
-│  ─ files      │              └──────────────────┘
-│  ─ audit_logs │
-└───────────────┘
-```
 
----
+### Architectural Summary
 
-## 🛠 Tech Stack
+- the browser interacts with Flask through web pages and forms
+- Flask handles business logic, authentication, validation, and authorization
+- cryptographic operations are delegated to utility functions
+- MongoDB stores structured records such as users, messages, metadata, and logs
+- encrypted file bytes are stored separately on disk in the `uploads/` directory
 
-| Layer | Technology |
-|-------|-----------|
-| **Backend** | Python 3.11+, Flask 3.x |
-| **Frontend** | Server-rendered Jinja2 templates, CSS, JavaScript |
-| **Database** | MongoDB with PyMongo |
-| **Cryptography** | `cryptography` library (AES-GCM, RSA-OAEP, RSA-PSS) |
-| **Authentication** | `bcrypt` for password hashing |
-| **Security** | Flask-WTF (CSRF), secure session cookies |
-| **Config** | `python-dotenv` for environment variables |
+## Project Structure
 
----
-
-## 📂 Project Structure
-
-```
+```text
 .
-├── app.py                    # Main Flask application (routes, middleware, logic)
-├── requirements.txt          # Python dependencies
-├── README.md
-├── .gitignore
-│
-├── database/
-│   └── db.py                 # MongoDB connection + index initialization
-│
-├── utils/
-│   ├── crypto_utils.py       # AES-GCM, RSA-OAEP, RSA-PSS, key wrapping
-│   ├── demo_data.py          # Seed script for demo users, messages, files
-│   ├── security_helpers.py   # Input validation, email normalization, utilities
-│   └── theory_content.py     # Security concepts & access control matrix data
-│
-├── templates/
-│   ├── base.html             # Base layout with navigation
-│   ├── login.html            # Login page
-│   ├── register.html         # User registration
-│   ├── dashboard.html        # Main dashboard with stats
-│   ├── compose.html          # Compose encrypted email
-│   ├── inbox.html            # Message inbox
-│   ├── message_detail.html   # Decrypted message view with crypto details
-│   ├── files.html            # Secure file listing
-│   ├── upload_file.html      # Upload & encrypt file
-│   ├── file_detail.html      # File details with signature verification
-│   ├── admin.html            # Admin panel (users, logs, alerts)
-│   ├── security_concepts.html# Theory-to-implementation mapping
-│   └── error.html            # Error pages (403, 404)
-│
-├── static/
-│   ├── css/
-│   │   └── style.css         # Application styles
-│   └── js/
-│       └── main.js           # Core JavaScript
-│
-├── uploads/                  # Encrypted file storage (*.bin)
-└── sample_data/
-    └── demo-policy.pdf       # Sample file for demo seeding
+|-- app.py
+|-- requirements.txt
+|-- README.md
+|-- database/
+|   `-- db.py
+|-- utils/
+|   |-- crypto_utils.py
+|   |-- demo_data.py
+|   |-- security_helpers.py
+|   `-- theory_content.py
+|-- templates/
+|   |-- base.html
+|   |-- login.html
+|   |-- register.html
+|   |-- dashboard.html
+|   |-- compose.html
+|   |-- inbox.html
+|   |-- message_detail.html
+|   |-- files.html
+|   |-- upload_file.html
+|   |-- file_detail.html
+|   |-- admin.html
+|   |-- security_concepts.html
+|   `-- error.html
+|-- static/
+|   |-- css/
+|   |   `-- style.css
+|   `-- js/
+|       |-- main.js
+|       `-- react-app.js
+|-- sample_data/
+|   `-- demo-policy.pdf
+`-- uploads/
 ```
 
----
+### Important Files
 
-## 🚀 Getting Started
+- `app.py`: main Flask application, routes, authentication flow, and feature logic
+- `database/db.py`: MongoDB connection and index creation
+- `utils/crypto_utils.py`: encryption, decryption, key generation, signatures, hashing
+- `utils/demo_data.py`: reusable demo data generation
+- `utils/security_helpers.py`: validation and helper functions
+- `utils/theory_content.py`: security theory content and access control matrix
+
+## Functional Workflow
+
+### 1. User Registration
+
+When a new user registers:
+
+1. the system validates the name, email, and password
+2. the password is hashed using bcrypt
+3. an RSA-2048 public/private key pair is generated
+4. the private key is wrapped using AES-GCM with a server-side secret
+5. the user record is stored in MongoDB
+
+This ensures that passwords are not stored in plain text and that each user has a cryptographic identity for secure communication.
+
+### 2. User Login
+
+When a user logs in:
+
+1. the email is normalized and matched against the database
+2. the password is verified using bcrypt
+3. failed login attempts are counted
+4. suspicious behavior is flagged after repeated failures
+5. a Flask session is created for authenticated access
+6. the activity is recorded in the audit log
+
+### 3. Secure Message Sending
+
+When a user sends a secure message:
+
+1. the sender writes the subject and body
+2. the system creates a plaintext JSON payload
+3. a random AES-256 key is generated
+4. the message payload is encrypted using AES-256-GCM
+5. the AES key is encrypted with the sender's RSA public key
+6. the AES key is encrypted again with the recipient's RSA public key
+7. the sender signs the plaintext using RSA-PSS
+8. the encrypted payload, wrapped keys, and signature are stored in MongoDB
+
+As a result, the stored message body remains encrypted at rest.
+
+### 4. Secure Message Reading
+
+When a sender or recipient opens a message:
+
+1. the system checks whether that user is authorized to view the record
+2. the correct RSA-wrapped AES key is selected
+3. the user's wrapped private key is unwrapped on the server
+4. the AES key is decrypted using RSA
+5. the original message content is recovered using AES-GCM
+6. the sender's public key is used to verify the digital signature
+
+### 5. Secure File Upload
+
+When a file is uploaded:
+
+1. the file type is validated against an allowed extension list
+2. the file is read into memory
+3. a SHA-256 checksum is computed from the original file bytes
+4. the file bytes are encrypted using AES-256-GCM
+5. the AES key is wrapped separately for the sender and recipient
+6. the original file is signed using the sender's private key
+7. the encrypted bytes are stored on disk as a `.bin` file
+8. file metadata is stored in MongoDB
+
+### 6. Secure File Inspection and Download
+
+When an authorized user inspects or downloads a file:
+
+1. access control verifies that the user is the sender or recipient
+2. the encrypted file bytes are loaded from storage
+3. the appropriate RSA-wrapped AES key is decrypted
+4. the file bytes are recovered using AES-GCM
+5. the signature is verified
+6. the checksum can be compared to confirm integrity
+7. the file can be downloaded in its original format
+
+### 7. Admin Monitoring
+
+Admin users can:
+
+- view registered users
+- identify accounts with repeated failed logins
+- review recent activity logs
+- seed demo data for presentation and testing
+
+## Security Design
+
+This project demonstrates multiple security properties together rather than focusing on encryption alone.
+
+| Security Goal | Mechanism Used | Implementation |
+| --- | --- | --- |
+| Confidentiality | AES-256-GCM | protects message and file payloads |
+| Secure key exchange | RSA-2048 OAEP | protects the AES key for sender and recipient |
+| Integrity | AES-GCM authentication and SHA-256 | ensures data is not silently altered |
+| Authentication | bcrypt and session-based login | secures user access |
+| Digital verification | RSA-PSS signatures | verifies sender and detects tampering |
+| Authorization | role checks and sender/recipient checks | restricts sensitive operations |
+| CSRF protection | Flask-WTF | protects form submissions |
+| Session security | HTTPOnly, SameSite, optional Secure cookies | strengthens web session handling |
+| Auditability | activity logs | tracks key actions across the platform |
+
+### Why Hybrid Encryption Is Used
+
+RSA is not efficient for encrypting large amounts of data such as message bodies or files. AES is much faster for bulk encryption. Therefore, the application uses a hybrid model:
+
+- AES encrypts the actual content
+- RSA encrypts the AES key
+- digital signatures verify who sent the content and whether it was changed
+
+This is the same core idea behind practical secure communication systems such as PGP-style workflows.
+
+### Cryptographic Flow
+
+```text
+Sender
+  |
+  |-- Generate random AES-256 key
+  |-- Encrypt message or file with AES-GCM
+  |-- Encrypt AES key with sender public RSA key
+  |-- Encrypt AES key with recipient public RSA key
+  |-- Sign original plaintext with sender private RSA key
+  |
+  +---- Store ciphertext + wrapped keys + signature ----> Database / Encrypted storage
+
+Recipient or Sender
+  |
+  |-- Select the correct wrapped AES key
+  |-- Decrypt AES key using private RSA key
+  |-- Decrypt payload using AES-GCM
+  |-- Verify signature using sender public RSA key
+  |
+  +---- View trusted plaintext
+```
+
+## Database Design
+
+The application uses MongoDB with the following main collections:
+
+### 1. `users`
+
+Stores:
+
+- full name
+- email address
+- password hash
+- role
+- public RSA key
+- wrapped private RSA key
+- failed login count
+- timestamps
+
+### 2. `messages`
+
+Stores:
+
+- sender ID
+- recipient ID
+- encrypted payload
+- wrapped AES keys for sender and recipient
+- digital signature
+- message type
+- creation time
+
+### 3. `secure_files`
+
+Stores:
+
+- sender ID
+- recipient ID
+- original filename
+- stored encrypted filename
+- MIME type
+- file size
+- SHA-256 hash
+- wrapped AES keys
+- digital signature
+- nonce
+- ciphertext preview
+- creation time
+
+### 4. `activity_logs`
+
+Stores:
+
+- user ID
+- action name
+- details
+- severity
+- timestamp
+
+### Database Indexing
+
+Indexes are created for:
+
+- unique email lookup
+- role lookup
+- inbox and sent-item retrieval
+- secure file retrieval
+- activity log sorting and filtering
+
+These indexes improve performance for common operations such as login, inbox viewing, and activity monitoring.
+
+## Access Control Model
+
+The system uses role-based access control together with ownership-based restrictions.
+
+| Resource | Admin | Staff |
+| --- | --- | --- |
+| Dashboard | Yes | Yes |
+| Own inbox and sent messages | Yes | Yes |
+| Own shared files | Yes | Yes |
+| Compose message | Yes | Yes |
+| Upload file | Yes | Yes |
+| Security concepts page | Yes | Yes |
+| Admin panel | Yes | No |
+| Seed demo data | Yes | No |
+| View other users' encrypted content | No | No |
+
+### Access Control Rules
+
+- only authenticated users can access application features
+- only admins can open the admin panel
+- only the sender or recipient can inspect or decrypt a message
+- only the sender or recipient can inspect or download a protected file
+
+## Installation and Execution
 
 ### Prerequisites
 
-- **Python 3.11+** — [Download](https://www.python.org/downloads/)
-- **MongoDB Community Server** — [Download](https://www.mongodb.com/try/download/community)
+- Python 3.11 or later
+- MongoDB running locally on port `27017`
 
-### Installation
+### 1. Clone the Repository
 
-1. **Clone the repository**
+```bash
+git clone <your-repository-url>
+cd "Data and information security"
+```
 
-   ```bash
-   git clone https://github.com/Niranjan070/Secure-Communication-Platform-for-Non-Profit-Organizations.git
-   cd Secure-Communication-Platform-for-Non-Profit-Organizations
-   ```
+### 2. Create a Virtual Environment
 
-2. **Start MongoDB** — ensure it is running locally on the default port (`27017`)
+#### Windows PowerShell
 
-3. **Create a virtual environment**
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
 
-   ```powershell
-   # Windows (PowerShell)
-   python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   ```
+#### Linux or macOS
 
-   ```bash
-   # macOS / Linux
-   python3 -m venv .venv
-   source .venv/bin/activate
-   ```
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
 
-4. **Install dependencies**
+### 3. Install Dependencies
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+pip install -r requirements.txt
+```
 
-5. **Seed demo data** (creates demo users, an encrypted message, and an encrypted file)
+### 4. Start MongoDB
 
-   ```bash
-   python app.py --seed-demo
-   ```
+Ensure MongoDB is running locally and accessible at:
 
-6. **Open in your browser**
+```text
+mongodb://127.0.0.1:27017/secure_ngo_platform
+```
 
-   ```
-   http://127.0.0.1:5000
-   ```
+### 5. Seed Demo Data
 
----
+```bash
+python app.py --seed-demo
+```
 
-## 🎮 Demo Walkthrough
+This creates:
 
-### Demo Accounts
+- one admin user
+- one staff user
+- one encrypted demo message
+- one encrypted demo PDF file
+
+### 6. Run the Application
+
+```bash
+python app.py
+```
+
+Open the application in your browser:
+
+```text
+http://127.0.0.1:5000
+```
+
+## Environment Variables
+
+The application supports the following configuration values:
+
+| Variable | Default Value | Description |
+| --- | --- | --- |
+| `FLASK_SECRET_KEY` | `change-this-flask-secret` | secret used for Flask sessions |
+| `PRIVATE_KEY_WRAP_SECRET` | `change-this-private-key-wrap-secret` | secret used to wrap stored private keys |
+| `MONGO_URI` | `mongodb://127.0.0.1:27017/secure_ngo_platform` | MongoDB connection string |
+| `ENABLE_HTTPS_ONLY` | `false` | when `true`, session cookies are marked Secure |
+
+### Example `.env`
+
+```env
+FLASK_SECRET_KEY=replace-with-a-strong-random-secret
+PRIVATE_KEY_WRAP_SECRET=replace-with-another-strong-random-secret
+MONGO_URI=mongodb://127.0.0.1:27017/secure_ngo_platform
+ENABLE_HTTPS_ONLY=false
+```
+
+For any real deployment, these secrets must be changed to strong unique values.
+
+## Demo Accounts
+
+After seeding demo data, the following accounts are available:
 
 | Role | Email | Password |
-|------|-------|----------|
-| **Admin** | `admin@ngo.local` | `Admin@123` |
-| **Staff** | `staff@ngo.local` | `Staff@123` |
+| --- | --- | --- |
+| Admin | `admin@ngo.local` | `Admin@123` |
+| Staff | `staff@ngo.local` | `Staff@123` |
 
-### Try This
+## Suggested Demonstration Flow
 
-1. **Log in** as `admin@ngo.local` → explore the **Dashboard** with stats cards
-2. Open the **Admin** panel → view registered users and audit logs
-3. Visit **Inbox** → open the seeded encrypted message and observe:
-   - Decrypted subject and body
-   - AES ciphertext preview (proving data is encrypted at rest)
-   - RSA-wrapped AES keys for both sender and recipient
-   - Digital signature verification status ✅
-4. Open **Files** → inspect the seeded `demo-policy.pdf`
-5. **Download** the file to verify it decrypts correctly on access
-6. **Compose** a new secure email or **upload** a new file to test the full end-to-end workflow
-7. Visit **Security Concepts** to see the theory-to-implementation mapping
+This order works well for a project demo, report screenshots, or viva presentation:
 
----
+1. log in as the admin account
+2. show the dashboard and explain the security summary cards
+3. open the admin panel and discuss user management, audit logs, and suspicious login monitoring
+4. open the inbox and view a secure message
+5. point out that the decrypted content is shown to the user, while encrypted payload details are stored separately
+6. open the files section and inspect the demo PDF
+7. show the checksum, signature status, and decrypt-and-download flow
+8. visit the security concepts page to connect the implementation with academic theory
 
-## 🔒 Security Implementation
+## Implementation Status
 
-### Password Storage
-Passwords are hashed using **bcrypt** with an auto-generated salt. The raw password is never stored or logged.
+The current repository is functionally complete for academic demonstration and report generation.
 
-### Per-User RSA Key Pairs
-On registration, each user receives a unique **RSA-2048 key pair**:
-- **Public key** — stored in plaintext for encrypting messages addressed to the user
-- **Private key** — wrapped (encrypted) with AES-256-GCM using a server-side secret before storage
+### Implemented
 
-### Message Encryption (Hybrid Cryptosystem)
-Messages use a **PGP-style hybrid encryption** approach:
-1. A random **AES-256 key** is generated per message
-2. The message body is encrypted with **AES-256-GCM** (authenticated encryption)
-3. The AES key is wrapped with the **sender's RSA public key** (so the sender can decrypt their own sent messages)
-4. The AES key is also wrapped with the **recipient's RSA public key**
-5. A **RSA-PSS digital signature** is created with the sender's private key
+- user registration
+- user login and logout
+- bcrypt password hashing
+- per-user RSA key generation
+- wrapped private key storage
+- encrypted messaging
+- encrypted file storage and retrieval
+- digital signature verification
+- role-based access control
+- CSRF protection
+- audit logging
+- suspicious login monitoring
+- demo data seeding
+- theory mapping page
 
-### File Encryption
-Files follow the same hybrid pattern:
-- File bytes are encrypted with AES-256-GCM
-- The encrypted blob is stored as a `.bin` file on disk
-- Decryption only occurs when an authorized user accesses the file
-- SHA-256 hash is computed pre-encryption for integrity verification
+### Not Included
 
----
+- automated tests
+- production deployment configuration
+- Docker setup
+- client-side end-to-end key management
+- email or notification integration with external services
 
-## 🔄 Cryptographic Flow
+## Limitations
 
-```
-Sender                                              Recipient
-  │                                                      │
-  │  1. Generate random AES-256 key                      │
-  │  2. Encrypt plaintext with AES-256-GCM               │
-  │  3. Wrap AES key with Sender's RSA public key        │
-  │  4. Wrap AES key with Recipient's RSA public key     │
-  │  5. Sign plaintext with Sender's RSA private key     │
-  │                                                      │
-  │  ─── Store in MongoDB (all encrypted) ──────────►    │
-  │                                                      │
-  │                    6. Unwrap AES key with             │
-  │                       Recipient's RSA private key     │
-  │                    7. Decrypt with AES-256-GCM        │
-  │                    8. Verify signature with           │
-  │                       Sender's RSA public key         │
-  │                                                      │
-```
+This section is important for transparency in a report or viva.
 
----
+1. The system is an academic prototype, not a production-hardened platform.
+2. Private keys are stored on the server in wrapped form. This means the application demonstrates strong secure storage and controlled decryption, but not pure end-to-end encryption where only the user device holds the private key.
+3. The development server runs with debug mode enabled in the current codebase.
+4. There are no automated unit tests or integration tests.
+5. HTTPS is recommended for production, but certificate management and deployment setup are outside the scope of this repository.
+6. The lightweight React widgets are loaded from a CDN, so those UI enhancements depend on internet access.
 
-## 📖 Security Concepts Mapped to Theory
+## Future Enhancements
 
-| Module | Topic | Implementation |
-|--------|-------|---------------|
-| **Module 2** | Threats & Access Control | Role-based access (Admin/Staff), access control matrix, brute-force detection, audit logging |
-| **Module 3** | Symmetric & Asymmetric Encryption | AES-256-GCM for data, RSA-2048 OAEP for key exchange, hybrid encryption model |
-| **Module 4** | Digital Signatures | RSA-PSS signatures for message integrity, authentication, and non-repudiation |
-| **Module 5** | PGP & IP Security | PGP-style hybrid email encryption, key pair lifecycle, secure internal messaging |
-| **Module 6** | Web Security | CSRF tokens (Flask-WTF), secure sessions (HTTPOnly, SameSite), input validation, HTTPS guidance |
+The following improvements can strengthen the project further:
 
----
+- move private key custody to the client side for stronger end-to-end guarantees
+- add rate limiting and account lockout
+- add automated unit and integration tests
+- containerize the application with Docker
+- add production deployment configuration
+- support more file types with malware scanning
+- add notification services and stronger monitoring
+- improve key rotation and recovery policies
 
-## ⚙️ Environment Variables
+## Conclusion
 
-Configure these in a `.env` file or set them in your shell before running:
+This project successfully demonstrates how core data and information security concepts can be applied in a practical software system. It combines authentication, encryption, digital signatures, access control, web security, and audit logging into a single coherent application for secure NGO communication.
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `FLASK_SECRET_KEY` | `change-this-flask-secret` | Secret key for Flask sessions |
-| `PRIVATE_KEY_WRAP_SECRET` | `change-this-private-key-wrap-secret` | Secret for wrapping RSA private keys |
-| `MONGO_URI` | `mongodb://127.0.0.1:27017/secure_ngo_platform` | MongoDB connection string |
-| `ENABLE_HTTPS_ONLY` | `false` | Set to `true` to enforce secure cookies |
-
-> ⚠️ **For production use**, always set strong, unique values for `FLASK_SECRET_KEY` and `PRIVATE_KEY_WRAP_SECRET`.
-
----
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Commit your changes (`git commit -m 'Add your feature'`)
-4. Push to the branch (`git push origin feature/your-feature`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
----
-
-<p align="center">
-  Built with 🔒 by <a href="https://github.com/Niranjan070">Niranjan</a>
-</p>
+As an academic project, it provides a strong example of secure system design with real implementation value. It is especially suitable for coursework, project reports, demonstrations, and panel presentations because it clearly connects cybersecurity theory to working software behavior.
